@@ -65,12 +65,33 @@ Options: `--secret` / `-s`, `--exp` (minutes), `--sub`, `--payload` / `-p` (JSON
 
 | Method | Path           | Description   |
 |--------|----------------|---------------|
-| GET    | `/api/health`  | Health check  |
+| GET    | `/api/health`  | Health check (no auth) |
 
 Example:
 
 ```bash
 curl http://localhost:8000/api/health
+```
+
+### Cinema rooms (JWT required)
+
+All cinema room endpoints require a valid JWT in the header: `Authorization: Bearer <token>`. Use the CLI to generate a token (see above).
+
+| Method | Path                     | Description |
+|--------|--------------------------|-------------|
+| GET    | `/api/cinema-rooms`      | List all   |
+| GET    | `/api/cinema-rooms/{id}` | Get one    |
+| POST   | `/api/cinema-rooms`      | Create (JSON body: rows, columns, movie, movieDatetime required) |
+| PUT    | `/api/cinema-rooms/{id}` | Update (JSON body; rows/columns validated against existing reservations) |
+| DELETE | `/api/cinema-rooms/{id}` | Delete (fails with 422 if room has reservations) |
+
+Request/response format: JSON. Example:
+
+```bash
+TOKEN=$(docker compose exec app php bin/console app:jwt:generate --no-ansi 2>/dev/null | tail -1)
+curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+  -d '{"rows":5,"columns":10,"movie":"Example Movie"}' \
+  http://localhost:8000/api/cinema-rooms
 ```
 
 ## Project structure

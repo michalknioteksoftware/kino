@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Validator\CinemaRoomDimensions;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'cinema_room')]
 #[ORM\HasLifecycleCallbacks]
+#[CinemaRoomDimensions]
 class CinemaRoom
 {
     /** @var \Doctrine\Common\Collections\Collection<int, CinemaRoomReservation> */
@@ -20,10 +23,12 @@ class CinemaRoom
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'rows', type: Types::INTEGER)]
+    #[ORM\Column(name: 'seat_rows', type: Types::INTEGER)]
+    #[Assert\Range(min: 1, max: 255)]
     private int $rows;
 
-    #[ORM\Column(name: 'columns', type: Types::INTEGER)]
+    #[ORM\Column(name: 'seat_columns', type: Types::INTEGER)]
+    #[Assert\Range(min: 1, max: 255)]
     private int $columns;
 
     #[ORM\Column(type: Types::STRING, length: 255)]
@@ -35,7 +40,8 @@ class CinemaRoom
     #[ORM\Column(name: 'updated', type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $updated = null;
 
-    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    #[Assert\NotNull(message: 'Movie date/time is required.')]
     private ?\DateTimeImmutable $movieDatetime = null;
 
     public function __construct()

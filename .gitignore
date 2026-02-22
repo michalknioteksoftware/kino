@@ -10,6 +10,7 @@
 .env.*.local
 /composer.lock
 .DS_Store
+jwt_temp.txt
 
 ###> symfony/framework-bundle ###
 /.env.local
