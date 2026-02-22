@@ -6,3 +6,7 @@ framework:
         log: true
     validation:
         enable_attributes: true
+
+when@test:
+    framework:
+        test: true

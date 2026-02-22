@@ -5,6 +5,10 @@
          colors="true"
          cacheDirectory=".phpunit.cache"
 >
+    <php>
+        <env name="APP_ENV" value="test"/>
+        <env name="KERNEL_CLASS" value="App\Kernel"/>
+    </php>
     <testsuites>
         <testsuite name="Project Test Suite">
             <directory>tests</directory>
@@ -17,11 +21,5 @@
         <exclude>
             <directory>src/Kernel.php</directory>
         </exclude>
-        <coverage>
-            <report>
-                <html outputDirectory="var/coverage"/>
-                <text outputFile="var/coverage.txt"/>
-            </report>
-        </coverage>
     </source>
 </phpunit>

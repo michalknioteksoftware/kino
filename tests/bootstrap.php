@@ -10,3 +10,7 @@ $_SERVER['APP_DEBUG'] = $_SERVER['APP_DEBUG'] ?? $_ENV['APP_DEBUG'] ?? '0';
 if (method_exists(Dotenv::class, 'bootEnv')) {
     (new Dotenv())->bootEnv(dirname(__DIR__).'/.env');
 }
+
+// Force test environment so .env cannot override it (config/packages/test/*.yaml loads)
+$_SERVER['APP_ENV'] = 'test';
+$_ENV['APP_ENV'] = 'test';
