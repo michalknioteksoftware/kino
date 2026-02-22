@@ -1,0 +1,10 @@
+.git
+.gitignore
+.env.local
+*.md
+vendor
+var
+node_modules
+.idea
+.vscode
+*.log

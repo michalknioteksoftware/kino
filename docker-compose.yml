@@ -1,0 +1,41 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kino-app
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - app_vendor:/app/vendor
+    environment:
+      DATABASE_URL: mysql://kino:kino_secret@db:3306/kino?serverVersion=8.0
+      APP_ENV: dev
+      APP_SECRET: ${APP_SECRET:-change-me-in-production}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: kino-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: kino
+      MYSQL_USER: kino
+      MYSQL_PASSWORD: kino_secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
+  app_vendor:
