@@ -90,9 +90,47 @@ Request/response format: JSON. Example:
 ```bash
 TOKEN=$(docker compose exec app php bin/console app:jwt:generate --no-ansi 2>/dev/null | tail -1)
 curl -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d '{"rows":5,"columns":10,"movie":"Example Movie"}' \
+  -d '{"rows":5,"columns":10,"movie":"Example Movie","movieDatetime":"2026-10-01T20:00:00+00:00"}' \
   http://localhost:8000/api/cinema-rooms
 ```
+
+### Public: cinema rooms list (no JWT)
+
+Returns all cinema rooms with reserved seats (row, column, and name of person who reserved).
+
+| Method | Path                         | Description |
+|--------|------------------------------|-------------|
+| GET    | `/api/public/cinema-rooms`   | List all rooms with reserved seats (no auth) |
+
+Example response shape: `{ "data": [ { "id", "rows", "columns", "movie", "movieDatetime", "reservedSeats": [ { "row", "column", "reservedByName" }, ... ] }, ... ] }`.
+
+```bash
+curl http://localhost:8000/api/public/cinema-rooms
+```
+
+### Public: cinema room reservation (no JWT)
+
+Reserve one or more seats in a cinema room. All seats are reserved in a single transaction; if any seat is invalid or already taken, the whole request fails (422) and nothing is saved.
+
+| Method | Path                  | Description |
+|--------|-----------------------|-------------|
+| POST   | `/api/reservations`   | Create reservations (no auth) |
+
+**Request body (JSON):**
+
+- `cinemaRoomId` (integer, required) – room ID
+- `reservedByName` (string, required, non-empty) – name of the person who reserves
+- `seats` (array, required) – at least one seat: `{ "row": 1, "column": 2 }` (row/column within room limits)
+
+**Validations:** Room must exist; seats must be within room rows/columns; seats must not be already reserved; reservation time must not be after the room’s `movieDatetime`. Duplicate seats in the same request are rejected.
+
+```bash
+curl -X POST http://localhost:8000/api/reservations \
+  -H "Content-Type: application/json" \
+  -d '{"cinemaRoomId":1,"reservedByName":"John Doe","seats":[{"row":1,"column":2},{"row":1,"column":3}]}'
+```
+
+**Windows scripts:** Use `scripts\windows\reserve.bat` or `reserve.ps1` (see script comments for usage; e.g. `reserve.bat 1 "John Doe" 1,2 1,3`).
 
 ## Project structure
 

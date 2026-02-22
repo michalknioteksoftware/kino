@@ -11,6 +11,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'cinema_room_reservations')]
+#[ORM\UniqueConstraint(name: 'cinema_room_seat_unique', columns: ['cinema_room_id', 'seat_row', 'seat_column'])]
 #[ORM\HasLifecycleCallbacks]
 #[Assert\Callback('validateSeatWithinRoom')]
 class CinemaRoomReservation
@@ -37,6 +38,11 @@ class CinemaRoomReservation
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $creation = null;
+
+    #[ORM\Column(name: 'reserved_by_name', type: Types::STRING, length: 255)]
+    #[Assert\NotBlank(message: 'reservedByName cannot be empty.')]
+    #[Assert\Length(max: 255, maxMessage: 'reservedByName must be at most {{ limit }} characters.')]
+    private string $reservedByName = '';
 
     public function getId(): ?int
     {
@@ -84,6 +90,17 @@ class CinemaRoomReservation
     public function setCreation(\DateTimeImmutable $creation): static
     {
         $this->creation = $creation;
+        return $this;
+    }
+
+    public function getReservedByName(): string
+    {
+        return $this->reservedByName;
+    }
+
+    public function setReservedByName(string $reservedByName): static
+    {
+        $this->reservedByName = $reservedByName;
         return $this;
     }
 
