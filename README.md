@@ -44,6 +44,23 @@ Or with coverage:
 docker compose exec app php bin/phpunit --coverage-html var/coverage
 ```
 
+## JWT token (CLI)
+
+Generate a JWT for testing or API auth:
+
+```bash
+# Default: 60 min expiry, uses APP_SECRET or JWT_SECRET from .env
+docker compose exec app php bin/console app:jwt:generate
+
+# Custom expiry (minutes), subject, and extra claims
+docker compose exec app php bin/console app:jwt:generate --exp=1440 --sub=user123 --payload='{"role":"admin"}'
+
+# Custom secret
+docker compose exec app php bin/console app:jwt:generate --secret=my-secret-key
+```
+
+Options: `--secret` / `-s`, `--exp` (minutes), `--sub`, `--payload` / `-p` (JSON), `--alg` (default HS256).
+
 ## API endpoints
 
 | Method | Path           | Description   |
